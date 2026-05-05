@@ -12,7 +12,7 @@ function App() {
       title: todoTitle,
       isCompleted: false,
     }
-    setTodoList([...todoList, newTodo])
+    setTodoList((prev) => [...prev, newTodo])
   }
 
   function completeTodo(id) {
