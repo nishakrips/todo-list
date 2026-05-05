@@ -10,15 +10,26 @@ function App() {
     const newTodo = {
       id: Date.now(),
       title: todoTitle,
+      isCompleted: false,
     }
-    setTodoList((prev) => [...prev, newTodo])
+    setTodoList([...todoList, newTodo])
+  }
+
+  function completeTodo(id) {
+    const updatedTodoList = todoList.map((todo) => {
+      if (todo.id === id) {
+        return { ...todo, isCompleted: true }
+      }
+      return todo
+    })
+    setTodoList(updatedTodoList)
   }
 
   return (
     <div>
       <h1>My Todos</h1>
       <TodoForm onAddTodo={addToDo} />
-      <TodoList todoList={todoList} />
+      <TodoList todoList={todoList} onCompleteTodo={completeTodo} />
     </div>
   )
 }
