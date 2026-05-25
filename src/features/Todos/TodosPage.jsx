@@ -110,9 +110,9 @@ function TodosPage({ token }) {
       method: "PATCH",
       body: JSON.stringify(payload),
       headers: {
+        credentials: "include",
         "Content-Type": "application/json",
         "X-CSRF-Token": `${token}`,
-        credentials: "include",
       },
     }
     try {
