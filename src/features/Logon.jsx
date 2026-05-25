@@ -1,0 +1,64 @@
+import { useState } from "react"
+import TextInputWithLabel from "./../shared/TextInputWithLabel"
+
+function Logon({ onSetEmail = () => {}, onSetToken = () => {} }) {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [authError, setAuthError] = useState("")
+  //const [isLoggingOn, setIsLoggingOn] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setLoading(true)
+    //setIsLoggingOn(true)
+    try {
+      const response = await fetch("/api/users/logon", {
+        credentials: "include",
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
+      const data = await response.json()
+      if (response.status === 200 && data.name && data.csrfToken) {
+        onSetEmail(data.name)
+        onSetToken(data.csrfToken)
+      } else {
+        setAuthError(`Authentication failed: ${data?.message}`)
+      }
+    } catch (error) {
+      setAuthError(`Error: ${error.name} | ${error.message}`)
+    } finally {
+      //setIsLoggingOn(false)
+      setLoading(false)
+    }
+  }
+
+  return (
+    <>
+      <p>{authError}</p>
+      <form onSubmit={handleSubmit}>
+        <TextInputWithLabel
+          elementId="email"
+          value={email}
+          labelText="Email"
+          required
+          onChange={(event) => setEmail(event.target.value)}
+        ></TextInputWithLabel>
+        <TextInputWithLabel
+          elementId="password"
+          value={password}
+          labelText="Password"
+          type="password"
+          required
+          onChange={(event) => setPassword(event.target.value)}
+        ></TextInputWithLabel>
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Log on"}
+        </button>
+      </form>
+    </>
+  )
+}
+
+export default Logon

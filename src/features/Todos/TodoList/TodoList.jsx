@@ -1,6 +1,6 @@
 import TodoListItem from "./TodoListItem"
 
-function TodoList({ todoList, onCompleteTodo, onUpdateTodo }) {
+function TodoList({ todoList = [], onCompleteTodo, onUpdateTodo }) {
   let filteredTodoList = todoList.filter((todo) => !todo.isCompleted)
   return (
     <ul>
