@@ -15,8 +15,8 @@ function TodosPage({ token }) {
       try {
         const response = await fetch("/api/tasks", {
           headers: {
-            "X-CSRF-Token": `Bearer ${token}`,
             credentials: "include",
+            "X-CSRF-Token": `${token}`,
           },
         })
         if (!response.ok) {
@@ -38,8 +38,9 @@ function TodosPage({ token }) {
       method: "POST",
       body: JSON.stringify(newTodo),
       headers: {
+        credentials: "include",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userToken}`,
+        "X-CSRF-Token": `${token}`,
       },
     }
     try {
@@ -61,7 +62,7 @@ function TodosPage({ token }) {
       body: JSON.stringify(newTodo),
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userToken}`,
+        "X-CSRF-Token": `${token}`,
       },
     }
     try {
