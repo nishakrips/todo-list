@@ -1,22 +1,22 @@
 import { useState } from "react"
 import TextInputWithLabel from "./../shared/TextInputWithLabel"
 
-function Logon({ onSetEmail, onSetToken }) {
+function Logon({ onSetEmail = () => {}, onSetToken = () => {} }) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [authError, setAuthError] = useState("")
-  const [isLoggingOn, setIsLoggingOn] = useState(false)
+  //const [isLoggingOn, setIsLoggingOn] = useState(false)
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
-    setIsLoggingOn(true)
+    //setIsLoggingOn(true)
     try {
       const response = await fetch("/api/users/logon", {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ email, password }),
       })
       const data = await response.json()
@@ -29,7 +29,7 @@ function Logon({ onSetEmail, onSetToken }) {
     } catch (error) {
       setAuthError(`Error: ${error.name} | ${error.message}`)
     } finally {
-      setIsLoggingOn(false)
+      //setIsLoggingOn(false)
       setLoading(false)
     }
   }

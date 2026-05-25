@@ -43,8 +43,8 @@ function TodosPage({ token }) {
       try {
         const response = await fetch(`/api/tasks?${params}`, {
           headers: {
-            "X-CSRF-Token": `${token}`,
             credentials: "include",
+            "X-CSRF-Token": `${token}`,
           },
         })
         if (!response.ok) {
@@ -75,9 +75,9 @@ function TodosPage({ token }) {
       method: "POST",
       body: JSON.stringify(newTodo),
       headers: {
+        credentials: "include",
         "Content-Type": "application/json",
         "X-CSRF-Token": `${token}`,
-        credentials: "include",
       },
     }
     try {
