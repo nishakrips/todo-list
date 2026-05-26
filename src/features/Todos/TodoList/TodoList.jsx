@@ -8,7 +8,6 @@ function TodoList({
   dataVersion,
 }) {
   let filteredTodoList = useMemo(() => {
-    // console.log(`Recalculating filtered todos (v${dataVersion})`)
     return {
       version: dataVersion,
       todos: todoList.filter((todo) => !todo.isCompleted),

@@ -5,8 +5,6 @@ import react from "@vitejs/plugin-react"
 export default ({ mode }) => {
   const env = loadEnv(mode, ".", "")
 
-  console.log("✅ vite.config.js is being loaded")
-
   return defineConfig({
     plugins: [react()],
     server: {

@@ -4,14 +4,14 @@ import { useCallback, useState } from "react"
 import { useEffect } from "react"
 import SortBy from "../../shared/SortBy.jsx"
 import useDebounce from "../../utils/useDebounce.js"
-import FilteredInput from "../../shared/FilteredInput.jsx"
+import FilterInput from "../../shared/FilteredInput.jsx"
 
 function TodosPage({ token }) {
   const [todoList, setTodoList] = useState([])
   const [error, setError] = useState(null)
   const [isTodoListLoading, setIsTodoListLoading] = useState(false)
   const [userToken, setUserToken] = useState(token)
-  const [sortBy, setSortBy] = useState("createdAt")
+  const [sortBy, setSortBy] = useState("creationDate")
   const [sortDirection, setSortDirection] = useState("desc")
   const [filterTerm, setFilterTerm] = useState("")
   const [dataVersion, setDataVersion] = useState(0)
@@ -20,7 +20,6 @@ function TodosPage({ token }) {
   const debouncedFilterTerm = useDebounce(filterTerm, 300)
 
   const invalidateCache = useCallback(() => {
-    // console.log("Invalidating memo cache after todo mutation")
     setDataVersion((prev) => prev + 1)
   }, [])
 
@@ -88,10 +87,6 @@ function TodosPage({ token }) {
         setTodoList((prev) => [...prev, saved])
         invalidateCache()
       }
-      // else {
-      //   // console.log(resp)
-      //   // console.dir(respData)
-      // }
     } catch (error) {
       console.log(error.message)
     }
@@ -123,10 +118,6 @@ function TodosPage({ token }) {
         setTodoList((prev) => prev.map((t) => (t.id === saved.id ? saved : t)))
         invalidateCache()
       }
-      // else {
-      //   console.log(resp)
-      //   console.dir(respData)
-      // }
     } catch (error) {
       console.log(error.message)
     }
@@ -182,15 +173,15 @@ function TodosPage({ token }) {
         </div>
       )}
       <div></div>
-      <FilteredInput
-        filterTerm={filterTerm}
-        onFilterChange={handleFilterChange}
-      />
       <SortBy
         sortBy={sortBy}
         sortDirection={sortDirection}
         onSortByChange={setSortBy}
         onSortDirectionChange={setSortDirection}
+      />
+      <FilterInput
+        filterTerm={filterTerm}
+        onFilterChange={handleFilterChange}
       />
       <TodoForm onAddTodo={addToDo} />
       <TodoList
