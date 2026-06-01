@@ -165,7 +165,7 @@ function TodosPage({ token }) {
               setFilterTerm("")
               setSortBy("creationDate")
               setSortDirection("desc")
-              setFilterError
+              setFilterError("")
             }}
           >
             Reset Filters
