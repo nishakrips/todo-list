@@ -1,21 +1,29 @@
 import TodoList from "./TodoList/TodoList.jsx"
 import TodoForm from "./TodoForm.jsx"
-import { useCallback, useState } from "react"
-import { useEffect } from "react"
+import { useCallback, useEffect, useReducer, useState } from "react"
 import SortBy from "../../shared/SortBy.jsx"
 import useDebounce from "../../utils/useDebounce.js"
 import FilterInput from "../../shared/FilteredInput.jsx"
+import {
+  TODO_ACTIONS,
+  initialTodoState,
+  todoReducer,
+} from "../../reducers/todoReducer.js"
+import { useAuth } from "../../contexts/AuthContext.jsx"
 
-function TodosPage({ token }) {
-  const [todoList, setTodoList] = useState([])
-  const [error, setError] = useState(null)
-  const [isTodoListLoading, setIsTodoListLoading] = useState(false)
-  const [userToken, setUserToken] = useState(token)
-  const [sortBy, setSortBy] = useState("creationDate")
-  const [sortDirection, setSortDirection] = useState("desc")
-  const [filterTerm, setFilterTerm] = useState("")
+function TodosPage() {
+  const { token } = useAuth()
+  const [state, dispatch] = useReducer(todoReducer, initialTodoState)
+  const {
+    todoList,
+    error,
+    filterError,
+    isTodoListLoading,
+    sortBy,
+    sortDirection,
+    filterTerm,
+  } = state
   const [dataVersion, setDataVersion] = useState(0)
-  const [filterError, setFilterError] = useState("")
 
   const debouncedFilterTerm = useDebounce(filterTerm, 300)
 
@@ -24,7 +32,7 @@ function TodosPage({ token }) {
   }, [])
 
   const handleFilterChange = (newFilterTerm) => {
-    setFilterTerm(newFilterTerm)
+    dispatch({ type: TODO_ACTIONS.SET_FILTER, payload: newFilterTerm })
   }
 
   useEffect(() => {
@@ -38,8 +46,8 @@ function TodosPage({ token }) {
       }
       const params = new URLSearchParams(paramsObject)
 
-      setIsTodoListLoading(true)
       try {
+        dispatch({ type: TODO_ACTIONS.FETCH_START })
         const response = await fetch(`/api/tasks?${params}`, {
           headers: {
             credentials: "include",
@@ -50,24 +58,16 @@ function TodosPage({ token }) {
           throw new Error("Failed to fetch todo list")
         }
         const data = await response.json()
-        setTodoList(data.tasks)
-        setFilterError("")
+        dispatch({ type: TODO_ACTIONS.FETCH_SUCCESS, payload: data.tasks })
       } catch (error) {
-        if (
-          debouncedFilterTerm ||
-          sortBy !== "creationDate" ||
-          sortDirection !== "desc"
-        ) {
-          setFilterError(`Error filtering/sorting todos: ${error.message}`)
-        } else {
-          setError(`Error fetching todos: ${error.message}`)
-        }
-      } finally {
-        setIsTodoListLoading(false)
+        dispatch({
+          type: TODO_ACTIONS.FETCH_ERROR,
+          payload: error.message,
+        })
       }
     }
     fetchTodos()
-  }, [debouncedFilterTerm, sortBy, sortDirection, token])
+  }, [debouncedFilterTerm, sortBy, sortDirection, token, dataVersion])
 
   async function handleAddToDo(newTodo) {
     const options = {
@@ -84,11 +84,11 @@ function TodosPage({ token }) {
       const respData = await resp.json().catch(() => null)
       if (resp.ok) {
         const saved = respData?.task ?? respData ?? newTodo
-        setTodoList((prev) => [...prev, saved])
+        dispatch({ type: TODO_ACTIONS.ADD_TODO_SUCCESS, payload: saved })
         invalidateCache()
       }
     } catch (error) {
-      console.log(error.message)
+      dispatch({ type: TODO_ACTIONS.ADD_TODO_ERROR, payload: error.message })
     }
   }
 
@@ -115,11 +115,17 @@ function TodosPage({ token }) {
       const respData = await resp.json().catch(() => null)
       if (resp.ok) {
         const saved = respData?.task ?? newTodo
-        setTodoList((prev) => prev.map((t) => (t.id === saved.id ? saved : t)))
+        dispatch({
+          type: TODO_ACTIONS.UPDATE_TODO_SUCCESS,
+          payload: saved,
+        })
         invalidateCache()
       }
     } catch (error) {
-      console.log(error.message)
+      dispatch({
+        type: TODO_ACTIONS.UPDATE_TODO_ERROR,
+        payload: error.message,
+      })
     }
   }
 
@@ -128,30 +134,27 @@ function TodosPage({ token }) {
       title: todoTitle,
       isCompleted: false,
     }
+    dispatch({ type: TODO_ACTIONS.ADD_TODO_START, payload: newTodo })
     handleAddToDo(newTodo)
   }
 
   function updateToDo(editedTodo) {
-    const updatedTodoList = todoList.map((todo) => {
-      if (todo.id === editedTodo.id) {
-        handleUpdateToDo(editedTodo)
-        return editedTodo
-      }
-      return todo
+    dispatch({
+      type: TODO_ACTIONS.UPDATE_TODO_START,
+      payload: editedTodo,
     })
-    setTodoList(updatedTodoList)
+    handleUpdateToDo(editedTodo)
   }
 
   function completeTodo(id) {
-    const updatedTodoList = todoList.map((todo) => {
-      if (todo.id === id) {
-        const updated = { ...todo, isCompleted: true }
-        handleUpdateToDo(updated)
-        return updated
-      }
-      return todo
+    const todo = todoList.find((t) => t.id === id)
+    if (!todo) return
+    const updated = { ...todo, isCompleted: true }
+    dispatch({
+      type: TODO_ACTIONS.COMPLETE_TODO_START,
+      payload: updated,
     })
-    setTodoList(updatedTodoList)
+    handleUpdateToDo(updated)
   }
 
   return (
@@ -159,14 +162,13 @@ function TodosPage({ token }) {
       {filterError && filterError.length > 0 && (
         <div>
           <p>{filterError}</p>
-          <button onClick={() => setFilterError("")}>Clear Filter Error</button>
           <button
-            onClick={() => {
-              setFilterTerm("")
-              setSortBy("creationDate")
-              setSortDirection("desc")
-              setFilterError("")
-            }}
+            onClick={() => dispatch({ type: TODO_ACTIONS.CLEAR_ERROR })}
+          >
+            Clear Filter Error
+          </button>
+          <button
+            onClick={() => dispatch({ type: TODO_ACTIONS.RESET_FILTERS })}
           >
             Reset Filters
           </button>
@@ -176,8 +178,18 @@ function TodosPage({ token }) {
       <SortBy
         sortBy={sortBy}
         sortDirection={sortDirection}
-        onSortByChange={setSortBy}
-        onSortDirectionChange={setSortDirection}
+        onSortByChange={(newSortBy) =>
+          dispatch({
+            type: TODO_ACTIONS.SET_SORT,
+            payload: newSortBy,
+          })
+        }
+        onSortDirectionChange={(newDirection) =>
+          dispatch({
+            type: TODO_ACTIONS.SET_SORT_DIRECTION,
+            payload: newDirection,
+          })
+        }
       />
       <FilterInput
         filterTerm={filterTerm}
@@ -189,6 +201,8 @@ function TodosPage({ token }) {
         onCompleteTodo={completeTodo}
         onUpdateTodo={updateToDo}
         dataVersion={dataVersion}
+        isLoading={isTodoListLoading}
+        error={error}
       />
     </div>
   )
