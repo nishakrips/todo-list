@@ -1,6 +1,6 @@
 import TodoList from "./TodoList/TodoList.jsx"
 import TodoForm from "./TodoForm.jsx"
-import { useCallback, useEffect, useReducer, useState } from "react"
+import { useCallback, useEffect, useReducer } from "react"
 import SortBy from "../../shared/SortBy.jsx"
 import useDebounce from "../../utils/useDebounce.js"
 import FilterInput from "../../shared/FilteredInput.jsx"
@@ -90,7 +90,11 @@ function TodosPage() {
         invalidateCache()
       }
     } catch (error) {
-      dispatch({ type: TODO_ACTIONS.ADD_TODO_ERROR, payload: error.message })
+      const retPayload = {
+        todoList: state.todoList,
+        error: error.message || "Failed to add todo",
+      }
+      dispatch({ type: TODO_ACTIONS.ADD_TODO_ERROR, payload: retPayload })
     }
   }
 
@@ -128,10 +132,11 @@ function TodosPage() {
         invalidateCache()
       }
     } catch (error) {
-      dispatch({
-        type: TODO_ACTIONS.UPDATE_TODO_ERROR,
-        payload: error.message,
-      })
+      const retPayload = {
+        todoList: state.todoList,
+        error: error.message || "Failed to update todo",
+      }
+      dispatch({ type: TODO_ACTIONS.UPDATE_TODO_ERROR, payload: retPayload })
     } finally {
       invalidateCache()
     }
