@@ -22,13 +22,14 @@ function TodosPage() {
     sortBy,
     sortDirection,
     filterTerm,
+    dataVersion,
   } = state
-  const [dataVersion, setDataVersion] = useState(0)
 
   const debouncedFilterTerm = useDebounce(filterTerm, 300)
 
   const invalidateCache = useCallback(() => {
-    setDataVersion((prev) => prev + 1)
+    // setDataVersion((prev) => prev + 1)
+    dispatch({ type: TODO_ACTIONS.SET_DATA_VERSION, payload: dataVersion + 1 })
   }, [])
 
   const handleFilterChange = (newFilterTerm) => {
@@ -79,6 +80,7 @@ function TodosPage() {
         "X-CSRF-Token": `${token}`,
       },
     }
+    dispatch({ type: TODO_ACTIONS.ADD_TODO_START, payload: newTodo })
     try {
       const resp = await fetch("/api/tasks", options)
       const respData = await resp.json().catch(() => null)
@@ -110,6 +112,10 @@ function TodosPage() {
         "X-CSRF-Token": `${token}`,
       },
     }
+    dispatch({
+      type: TODO_ACTIONS.UPDATE_TODO_START,
+      payload: newTodo,
+    })
     try {
       const resp = await fetch(`/api/tasks/${encodeURIComponent(id)}`, options)
       const respData = await resp.json().catch(() => null)
@@ -126,6 +132,8 @@ function TodosPage() {
         type: TODO_ACTIONS.UPDATE_TODO_ERROR,
         payload: error.message,
       })
+    } finally {
+      invalidateCache()
     }
   }
 
@@ -162,9 +170,7 @@ function TodosPage() {
       {filterError && filterError.length > 0 && (
         <div>
           <p>{filterError}</p>
-          <button
-            onClick={() => dispatch({ type: TODO_ACTIONS.CLEAR_ERROR })}
-          >
+          <button onClick={() => dispatch({ type: TODO_ACTIONS.CLEAR_ERROR })}>
             Clear Filter Error
           </button>
           <button

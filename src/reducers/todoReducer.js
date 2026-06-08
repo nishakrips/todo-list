@@ -23,6 +23,7 @@ export const TODO_ACTIONS = {
   SET_FILTER: "SET_FILTER",
   SET_SORT: "SET_SORT",
   SET_SORT_DIRECTION: "SET_SORT_DIRECTION",
+  SET_DATA_VERSION: "SET_DATA_VERSION",
   CLEAR_ERROR: "CLEAR_ERROR",
   RESET_FILTERS: "RESET_FILTERS",
 }
@@ -31,7 +32,7 @@ export const initialTodoState = {
   todoList: [],
   error: "",
   filterError: "",
-  isTodoListLoading: false,
+  isTodoListLoading: true,
   sortBy: "creationDate",
   sortDirection: "desc",
   filterTerm: "",
@@ -57,13 +58,17 @@ export function todoReducer(state, action) {
         filterError: `Error filtering/sorting todos: ${action.payload}`,
       }
     case TODO_ACTIONS.ADD_TODO_START:
-      return { ...state }
+      return { ...state, todoList: [...state.todoList, action.payload] }
     case TODO_ACTIONS.ADD_TODO_SUCCESS:
       return { ...state, todoList: [...state.todoList, action.payload] }
     case TODO_ACTIONS.ADD_TODO_ERROR:
       return { ...state, error: action.payload }
-    case TODO_ACTIONS.UPDATE_TODO_START:
-      return { ...state, error: "", filterError: "" }
+    case TODO_ACTIONS.UPDATE_TODO_START: {
+      const updatedTodoList = state.todoList.map((todo) =>
+        todo.id === action.payload.id ? action.payload : todo,
+      )
+      return { ...state, todoList: updatedTodoList }
+    }
     case TODO_ACTIONS.UPDATE_TODO_SUCCESS: {
       const updatedTodoList = state.todoList.map((todo) =>
         todo.id === action.payload.id ? action.payload : todo,
@@ -72,8 +77,12 @@ export function todoReducer(state, action) {
     }
     case TODO_ACTIONS.UPDATE_TODO_ERROR:
       return { ...state, error: action.payload }
-    case TODO_ACTIONS.COMPLETE_TODO_START:
-      return { ...state, error: "" }
+    case TODO_ACTIONS.COMPLETE_TODO_START: {
+      const completedTodoList = state.todoList.map((todo) =>
+        todo.id === action.payload.id ? action.payload : todo,
+      )
+      return { ...state, todoList: completedTodoList }
+    }
     case TODO_ACTIONS.COMPLETE_TODO_SUCCESS: {
       const completedTodoList = state.todoList.map((todo) =>
         todo.id === action.payload.id ? action.payload : todo,
@@ -88,14 +97,16 @@ export function todoReducer(state, action) {
       return { ...state, sortBy: action.payload }
     case TODO_ACTIONS.SET_SORT_DIRECTION:
       return { ...state, sortDirection: action.payload }
+    case TODO_ACTIONS.SET_DATA_VERSION:
+      return { ...state, dataVersion: action.payload }
     case TODO_ACTIONS.CLEAR_ERROR:
       return { ...state, error: "", filterError: "" }
     case TODO_ACTIONS.RESET_FILTERS:
       return {
         ...state,
         filterTerm: "",
-        sortBy: "creationDate",
-        sortDirection: "desc",
+        sortBy: "createdDate",
+        sortDirection: "asc",
         filterError: "",
       }
     default:
