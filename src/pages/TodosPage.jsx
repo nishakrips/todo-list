@@ -1,18 +1,21 @@
-import TodoList from "./TodoList/TodoList.jsx"
-import TodoForm from "./TodoForm.jsx"
+import TodoList from "../features/Todos/TodoList/TodoList.jsx"
+import TodoForm from "../features/Todos/TodoForm.jsx"
 import { useCallback, useEffect, useReducer } from "react"
-import SortBy from "../../shared/SortBy.jsx"
-import useDebounce from "../../utils/useDebounce.js"
-import FilterInput from "../../shared/FilteredInput.jsx"
+import SortBy from "../shared/SortBy.jsx"
+import useDebounce from "../utils/useDebounce.js"
+import FilterInput from "../shared/FilteredInput.jsx"
 import {
   TODO_ACTIONS,
   initialTodoState,
   todoReducer,
-} from "../../reducers/todoReducer.js"
-import { useAuth } from "../../contexts/AuthContext.jsx"
+} from "../reducers/todoReducer.js"
+import { useAuth } from "../contexts/AuthContext.jsx"
+import { useSearchParams } from "react-router"
+import StatusFilter from "../shared/StatusFilter.jsx"
 
 function TodosPage() {
   const { token } = useAuth()
+
   const [state, dispatch] = useReducer(todoReducer, initialTodoState)
   const {
     todoList,
@@ -25,6 +28,9 @@ function TodosPage() {
     dataVersion,
   } = state
 
+  // Get status filter from URL, default to 'all'
+  const [searchParams] = useSearchParams()
+  const statusFilter = searchParams.get("status") || "all"
   const debouncedFilterTerm = useDebounce(filterTerm, 300)
 
   const invalidateCache = useCallback(() => {
@@ -202,6 +208,7 @@ function TodosPage() {
           })
         }
       />
+      <StatusFilter />
       <FilterInput
         filterTerm={filterTerm}
         onFilterChange={handleFilterChange}
@@ -212,8 +219,7 @@ function TodosPage() {
         onCompleteTodo={completeTodo}
         onUpdateTodo={updateToDo}
         dataVersion={dataVersion}
-        isLoading={isTodoListLoading}
-        error={error}
+        statusFilter={statusFilter}
       />
     </div>
   )
