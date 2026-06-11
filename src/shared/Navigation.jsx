@@ -30,7 +30,9 @@ function Navigation() {
               </NavLink>
             </li>
             <li>
-              <button onClick={logout}>Logout</button>
+              <NavLink to="/login" style={navLinkStyle}>
+                Logout
+              </NavLink>
             </li>
           </>
         )}

@@ -10,7 +10,7 @@ function ProfilePage() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
-  const { token, user } = useAuth()
+  const { token, name } = useAuth()
 
   useEffect(() => {
     async function fetchTodoStats() {
@@ -38,8 +38,10 @@ function ProfilePage() {
         const todos = todoTasks.tasks
 
         const total = todos.length
-        const completed = todos.filter((todo) => todo.isCompleted).length
-        const active = total - completed
+        const completed =
+          (todos.filter((todo) => todo.isCompleted).length / total) * 100
+        const active =
+          (todos.filter((todo) => !todo.isCompleted).length / total) * 100
         setTodoStats({ total, completed, active })
       } catch (error) {
         setError(`Error loading statistics: ${error.message}`)
@@ -54,7 +56,7 @@ function ProfilePage() {
     <div>
       <h1>Profile</h1>
       <p>This is the user profile page.</p>
-      <h2>Todo Statistics</h2>
+      <h2>Todo Statistics for {name}</h2>
       {isLoading ? (
         <p>Loading statistics...</p>
       ) : error ? (
@@ -62,8 +64,8 @@ function ProfilePage() {
       ) : (
         <ul>
           <li>Total Todos: {todoStats.total}</li>
-          <li>Completed Todos: {todoStats.completed}</li>
-          <li>Active Todos: {todoStats.active}</li>
+          <li>Completed Todos: {todoStats.completed}%</li>
+          <li>Active Todos: {todoStats.active}%</li>
         </ul>
       )}
     </div>
