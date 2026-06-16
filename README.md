@@ -12,9 +12,9 @@ as well as user authentication for a personalized experience.
 ## 📸 Screenshots
 
 ![Homepage showing user todos](./screenshots/todos.jpg)
-![Login page](./screenshots/login.png)
-![About page](./screenshots/about.png)
-![Profile page](./screenshots/userstats.png)
+![Login page](./screenshots/login.jpg)
+![About page](./screenshots/about.jpg)
+![Profile page](./screenshots/userstats.jpg)
 
 ## 🛠️ Technologies Used
 
