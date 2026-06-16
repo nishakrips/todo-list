@@ -7,7 +7,7 @@ as well as user authentication for a personalized experience.
 
 ## 🚀 Live Demo
 
-[View Live Application](https://your-deployed-app.netlify.app)
+[View Live Application](https://todo-list-ten-henna-99.vercel.app)
 
 ## 📸 Screenshots
 
