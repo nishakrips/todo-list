@@ -15,7 +15,7 @@ function StatusFilter() {
   }
 
   return (
-    <div>
+    <>
       <label htmlFor="statusFilter">Show:</label>
       <select
         id="statusFilter"
@@ -26,7 +26,7 @@ function StatusFilter() {
         <option value="active">Active Todos</option>
         <option value="completed">Completed Todos</option>
       </select>
-    </div>
+    </>
   )
 }
 

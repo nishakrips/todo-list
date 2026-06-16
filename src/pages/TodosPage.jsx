@@ -1,9 +1,8 @@
 import TodoList from "../features/Todos/TodoList/TodoList.jsx"
 import TodoForm from "../features/Todos/TodoForm.jsx"
 import { useCallback, useEffect, useReducer } from "react"
-import SortBy from "../shared/SortBy.jsx"
+import Toolbar from "../shared/Toolbar.jsx"
 import useDebounce from "../utils/useDebounce.js"
-import FilterInput from "../shared/FilteredInput.jsx"
 import {
   TODO_ACTIONS,
   initialTodoState,
@@ -11,7 +10,6 @@ import {
 } from "../reducers/todoReducer.js"
 import { useAuth } from "../contexts/AuthContext.jsx"
 import { useSearchParams } from "react-router"
-import StatusFilter from "../shared/StatusFilter.jsx"
 
 function TodosPage() {
   const { token } = useAuth()
@@ -19,9 +17,7 @@ function TodosPage() {
   const [state, dispatch] = useReducer(todoReducer, initialTodoState)
   const {
     todoList,
-    error,
     filterError,
-    isTodoListLoading,
     sortBy,
     sortDirection,
     filterTerm,
@@ -34,9 +30,8 @@ function TodosPage() {
   const debouncedFilterTerm = useDebounce(filterTerm, 300)
 
   const invalidateCache = useCallback(() => {
-    // setDataVersion((prev) => prev + 1)
     dispatch({ type: TODO_ACTIONS.SET_DATA_VERSION, payload: dataVersion + 1 })
-  }, [])
+  }, [dataVersion])
 
   const handleFilterChange = (newFilterTerm) => {
     dispatch({ type: TODO_ACTIONS.SET_FILTER, payload: newFilterTerm })
@@ -191,8 +186,7 @@ function TodosPage() {
           </button>
         </div>
       )}
-      <div></div>
-      <SortBy
+      <Toolbar
         sortBy={sortBy}
         sortDirection={sortDirection}
         onSortByChange={(newSortBy) =>
@@ -207,9 +201,6 @@ function TodosPage() {
             payload: newDirection,
           })
         }
-      />
-      <StatusFilter />
-      <FilterInput
         filterTerm={filterTerm}
         onFilterChange={handleFilterChange}
       />

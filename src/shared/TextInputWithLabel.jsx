@@ -8,7 +8,7 @@ function TextInputWithLabel({
 }) {
   return (
     <>
-      <label htmlFor={elementId}>{labelText}</label>
+      {labelText ? <label htmlFor={elementId}>{labelText}</label> : null}
       <input
         type={type}
         id={elementId}
