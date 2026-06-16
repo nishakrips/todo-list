@@ -1,6 +1,7 @@
 import { useEditableTitle } from "../../../hooks/useEditableTitle.js"
 import { isValidTodoTitle } from "../../../utils/todoValidation.js"
 import TextInputWithLabel from "../../../shared/TextInputWithLabel.jsx"
+import styles from "./TodoListItem.module.css"
 
 function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
   const {
@@ -25,8 +26,8 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
   }
 
   return (
-    <li>
-      <form onSubmit={handleUpdate}>
+    <li className={styles.todoItem}>
+      <form className={styles.todoItemForm} onSubmit={handleUpdate}>
         {isEditing ? (
           <>
             <TextInputWithLabel
@@ -44,15 +45,20 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
           </>
         ) : (
           <>
-            <label>
+            <label className={styles.todoCheckbox}>
               <input
                 type="checkbox"
                 id={`checkbox-${todo.id}`}
                 checked={todo.isCompleted}
-                onChange={() => onCompleteTodo(todo.id)}
+                onChange={(evt) => onCompleteTodo(todo.id, evt.target.checked)}
               />
             </label>
-            <span onClick={() => startEditing()}>{todo.title}</span>
+            <span
+              className={styles.todoItemText}
+              onClick={() => startEditing()}
+            >
+              {todo.title}
+            </span>
           </>
         )}
       </form>

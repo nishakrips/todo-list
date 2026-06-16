@@ -1,8 +1,8 @@
 import { useState } from "react"
-import TextInputWithLabel from "./../shared/TextInputWithLabel"
+import TextInputWithLabel from "../shared/TextInputWithLabel.jsx"
 import { useAuth } from "../contexts/AuthContext.jsx"
 
-function Logon() {
+function LogOn() {
   const { login } = useAuth()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -47,4 +47,4 @@ function Logon() {
   )
 }
 
-export default Logon
+export default LogOn

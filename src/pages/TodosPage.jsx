@@ -1,47 +1,75 @@
-import TodoList from "./TodoList/TodoList.jsx"
-import TodoForm from "./TodoForm.jsx"
-import { useCallback, useEffect, useReducer } from "react"
-import SortBy from "../../shared/SortBy.jsx"
-import useDebounce from "../../utils/useDebounce.js"
-import FilterInput from "../../shared/FilteredInput.jsx"
+import TodoList from "../features/Todos/TodoList/TodoList.jsx"
+import TodoForm from "../features/Todos/TodoForm.jsx"
+import { useEffect, useMemo, useReducer } from "react"
+import Toolbar from "../shared/Toolbar.jsx"
+import useDebounce from "../utils/useDebounce.js"
 import {
   TODO_ACTIONS,
   initialTodoState,
   todoReducer,
-} from "../../reducers/todoReducer.js"
-import { useAuth } from "../../contexts/AuthContext.jsx"
+} from "../reducers/todoReducer.js"
+import { useAuth } from "../contexts/AuthContext.jsx"
+import { useSearchParams } from "react-router"
 
 function TodosPage() {
   const { token } = useAuth()
+
   const [state, dispatch] = useReducer(todoReducer, initialTodoState)
   const {
     todoList,
-    error,
     filterError,
-    isTodoListLoading,
     sortBy,
     sortDirection,
     filterTerm,
     dataVersion,
   } = state
 
+  // Get status filter from URL, default to 'all'
+  const [searchParams] = useSearchParams()
+  const statusFilter = searchParams.get("status") || "all"
   const debouncedFilterTerm = useDebounce(filterTerm, 300)
-
-  const invalidateCache = useCallback(() => {
-    // setDataVersion((prev) => prev + 1)
-    dispatch({ type: TODO_ACTIONS.SET_DATA_VERSION, payload: dataVersion + 1 })
-  }, [])
 
   const handleFilterChange = (newFilterTerm) => {
     dispatch({ type: TODO_ACTIONS.SET_FILTER, payload: newFilterTerm })
   }
 
+  const sortTodoList = (todos, sortByField, direction) => {
+    const normalizedList = Array.isArray(todos) ? [...todos] : []
+    const compare = (left, right) => {
+      const leftValue = left.title ?? ""
+      const rightValue = right.title ?? ""
+      if (sortByField === "title") {
+        return leftValue.localeCompare(rightValue, undefined, {
+          sensitivity: "base",
+        })
+      }
+
+      const leftDate = Date.parse(left.createdDate || left.creationDate || "")
+      const rightDate = Date.parse(
+        right.createdDate || right.creationDate || "",
+      )
+      if (!Number.isFinite(leftDate) && !Number.isFinite(rightDate)) {
+        return 0
+      }
+      if (!Number.isFinite(leftDate)) {
+        return 1
+      }
+      if (!Number.isFinite(rightDate)) {
+        return -1
+      }
+      return leftDate - rightDate
+    }
+
+    normalizedList.sort((a, b) => {
+      const result = compare(a, b)
+      return direction === "desc" ? -result : result
+    })
+    return normalizedList
+  }
+
   useEffect(() => {
     async function fetchTodos() {
-      const paramsObject = {
-        sortBy,
-        sortDirection,
-      }
+      const paramsObject = {}
       if (debouncedFilterTerm) {
         paramsObject.find = debouncedFilterTerm
       }
@@ -68,7 +96,7 @@ function TodosPage() {
       }
     }
     fetchTodos()
-  }, [debouncedFilterTerm, sortBy, sortDirection, token, dataVersion])
+  }, [debouncedFilterTerm, token, dataVersion])
 
   async function handleAddToDo(newTodo) {
     const options = {
@@ -80,14 +108,12 @@ function TodosPage() {
         "X-CSRF-Token": `${token}`,
       },
     }
-    dispatch({ type: TODO_ACTIONS.ADD_TODO_START, payload: newTodo })
     try {
       const resp = await fetch("/api/tasks", options)
       const respData = await resp.json().catch(() => null)
       if (resp.ok) {
         const saved = respData?.task ?? respData ?? newTodo
         dispatch({ type: TODO_ACTIONS.ADD_TODO_SUCCESS, payload: saved })
-        invalidateCache()
       }
     } catch (error) {
       const retPayload = {
@@ -129,7 +155,6 @@ function TodosPage() {
           type: TODO_ACTIONS.UPDATE_TODO_SUCCESS,
           payload: saved,
         })
-        invalidateCache()
       }
     } catch (error) {
       const retPayload = {
@@ -137,8 +162,6 @@ function TodosPage() {
         error: error.message || "Failed to update todo",
       }
       dispatch({ type: TODO_ACTIONS.UPDATE_TODO_ERROR, payload: retPayload })
-    } finally {
-      invalidateCache()
     }
   }
 
@@ -147,7 +170,6 @@ function TodosPage() {
       title: todoTitle,
       isCompleted: false,
     }
-    dispatch({ type: TODO_ACTIONS.ADD_TODO_START, payload: newTodo })
     handleAddToDo(newTodo)
   }
 
@@ -159,16 +181,21 @@ function TodosPage() {
     handleUpdateToDo(editedTodo)
   }
 
-  function completeTodo(id) {
+  function completeTodo(id, isCompleted) {
     const todo = todoList.find((t) => t.id === id)
     if (!todo) return
-    const updated = { ...todo, isCompleted: true }
+    const updated = { ...todo, isCompleted }
     dispatch({
       type: TODO_ACTIONS.COMPLETE_TODO_START,
       payload: updated,
     })
     handleUpdateToDo(updated)
   }
+
+  const sortedTodoList = useMemo(
+    () => sortTodoList(todoList, sortBy, sortDirection),
+    [todoList, sortBy, sortDirection],
+  )
 
   return (
     <div>
@@ -185,8 +212,7 @@ function TodosPage() {
           </button>
         </div>
       )}
-      <div></div>
-      <SortBy
+      <Toolbar
         sortBy={sortBy}
         sortDirection={sortDirection}
         onSortByChange={(newSortBy) =>
@@ -201,19 +227,16 @@ function TodosPage() {
             payload: newDirection,
           })
         }
-      />
-      <FilterInput
         filterTerm={filterTerm}
         onFilterChange={handleFilterChange}
       />
       <TodoForm onAddTodo={addToDo} />
       <TodoList
-        todoList={todoList}
+        todoList={sortedTodoList}
         onCompleteTodo={completeTodo}
         onUpdateTodo={updateToDo}
         dataVersion={dataVersion}
-        isLoading={isTodoListLoading}
-        error={error}
+        statusFilter={statusFilter}
       />
     </div>
   )

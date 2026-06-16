@@ -1,0 +1,26 @@
+.todoItem {
+  display: flex;
+  align-items: center;
+  list-style: disc inside;
+  margin: 0 0 0.5rem;
+  padding-left: 0.75rem;
+}
+
+.todoItemForm {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.todoCheckbox {
+  display: inline-flex;
+  align-items: center;
+}
+
+.todoItemText {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}

@@ -105,7 +105,7 @@ export function todoReducer(state, action) {
       return {
         ...state,
         filterTerm: "",
-        sortBy: "createdDate",
+        sortBy: "creationDate",
         sortDirection: "asc",
         filterError: "",
       }
