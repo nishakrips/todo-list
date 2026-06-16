@@ -62,13 +62,15 @@ export function AuthProvider({ children }) {
       const res = await fetch("/api/users/logout", options)
       const data = await res.json()
 
-      if (res.status === 200 && data.name && data.csrfToken) {
+      if (res.status === 200) {
         // Success: Update state
         setEmail("")
         setToken(null)
         return { success: true }
       } else {
         // Failure: Return error
+        setEmail("")
+        setToken(null)
         return {
           success: false,
           error: `Logout failed: ${data?.message}`,

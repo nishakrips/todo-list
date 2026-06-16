@@ -6,9 +6,8 @@ function Header() {
 
   return (
     <header>
-      <h1>My Todos</h1>
+      {/* <h1>My Todos</h1> */}
       <Navigation />
-      {isAuthenticated && <button onClick={() => logout()}>Logout</button>}
     </header>
   )
 }

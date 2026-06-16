@@ -165,10 +165,10 @@ function TodosPage() {
     handleUpdateToDo(editedTodo)
   }
 
-  function completeTodo(id) {
+  function completeTodo(id, isCompleted) {
     const todo = todoList.find((t) => t.id === id)
     if (!todo) return
-    const updated = { ...todo, isCompleted: true }
+    const updated = { ...todo, isCompleted }
     dispatch({
       type: TODO_ACTIONS.COMPLETE_TODO_START,
       payload: updated,

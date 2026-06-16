@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router" // Add this import
 import { useAuth } from "../contexts/AuthContext"
 
-function Logoff() {
+function LogOff() {
   const { logout } = useAuth()
   const navigate = useNavigate() // Add this hook
   const [isLoggingOff, setIsLoggingOff] = useState(false)
@@ -19,6 +19,7 @@ function Logoff() {
     } else {
       setError(result.error)
       setIsLoggingOff(false)
+      navigate("/login")
     }
   }
 
@@ -32,4 +33,4 @@ function Logoff() {
   )
 }
 
-export default Logoff
+export default LogOff

@@ -1,11 +1,18 @@
-import { NavLink } from "react-router"
+import { NavLink, useNavigate } from "react-router"
 import { useAuth } from "../contexts/AuthContext.jsx"
 
 function Navigation() {
   const { isAuthenticated, logout } = useAuth()
+  const navigate = useNavigate()
+
+  async function handleLogout(event) {
+    event.preventDefault()
+    await logout()
+    navigate("/login", { replace: true })
+  }
 
   return (
-    <nav>
+    <nav className="nav">
       <ul>
         <li>
           <NavLink to="/" style={navLinkStyle}>
@@ -30,7 +37,7 @@ function Navigation() {
               </NavLink>
             </li>
             <li>
-              <NavLink to="/login" style={navLinkStyle}>
+              <NavLink to="/login" style={navLinkStyle} onClick={handleLogout}>
                 Logout
               </NavLink>
             </li>

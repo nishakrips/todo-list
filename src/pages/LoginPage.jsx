@@ -28,33 +28,39 @@ function LoginPage() {
     e.preventDefault()
     setLoading(true)
     setAuthError("")
-    // ... existing login logic
     const result = await login(email, password)
-    if (result.success) {
-      // useEffect will handle redirect
+    setLoading(false)
+    if (!result.success) {
+      setAuthError(result.error || "Login failed")
     }
+    // success redirect handled by useEffect
   }
 
-  // ... rest of component with form JSX
   return (
     <>
       <p>{authError}</p>
-      <form onSubmit={handleSubmit}>
-        <TextInputWithLabel
-          elementId="email"
-          value={email}
-          labelText="Email"
-          required
-          onChange={(event) => setEmail(event.target.value)}
-        ></TextInputWithLabel>
-        <TextInputWithLabel
-          elementId="password"
-          value={password}
-          labelText="Password"
-          type="password"
-          required
-          onChange={(event) => setPassword(event.target.value)}
-        ></TextInputWithLabel>
+      <form onSubmit={handleSubmit} className="login-form">
+        <div className="login-row">
+          <div className="field">
+            <TextInputWithLabel
+              elementId="email"
+              value={email}
+              labelText="Email"
+              required
+              onChange={(event) => setEmail(event.target.value)}
+            />
+          </div>
+          <div className="field">
+            <TextInputWithLabel
+              elementId="password"
+              value={password}
+              labelText="Password"
+              type="password"
+              required
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </div>
+        </div>
         <button type="submit" disabled={loading}>
           {loading ? "Logging in..." : "Log on"}
         </button>
