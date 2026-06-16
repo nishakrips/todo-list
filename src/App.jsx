@@ -1,4 +1,4 @@
-import "./App.css"
+import styles from "./App.module.css"
 import { Routes, Route } from "react-router"
 import Header from "./shared/Header"
 import AboutPage from "./pages/AboutPage"
@@ -11,11 +11,11 @@ import NotFoundPage from "./pages/NotFoundPage"
 
 function App() {
   return (
-    <div>
-      <header>
+    <div className={styles.app}>
+      <header className={styles.pageHeader}>
         <Header />
       </header>
-      <main>
+      <main className={styles.pageMain}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />

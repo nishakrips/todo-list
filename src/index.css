@@ -1,0 +1,165 @@
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --text: #1a1a1a;
+  --muted: #909090;
+  --border: #eaeaea;
+  --accent: #0052cc;
+  --surface: #f8f9fb;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: -0.01em;
+  line-height: 1.6;
+}
+
+body {
+  background-color: var(--bg);
+}
+
+nav a,
+.nav-button {
+  color: var(--text);
+  text-decoration: none;
+}
+
+nav a:hover,
+.nav-button:hover,
+nav a:focus,
+.nav-button:focus {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: var(--text);
+}
+
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--bg);
+  color: var(--text);
+  padding: 0.85rem 1.25rem;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+button:hover:not(:disabled) {
+  background: rgba(0, 82, 204, 0.08);
+}
+
+button:focus-visible {
+  outline: 3px solid rgba(0, 82, 204, 0.25);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+button[type="submit"],
+.primary-button {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
+button[type="submit"]:hover:not(:disabled),
+.primary-button:hover {
+  background: #003a99;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: #ffffff;
+  padding: 0.85rem 1rem;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(0, 82, 204, 0.08);
+}
+
+label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.login-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  width: 100%;
+  max-width: 420px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--surface);
+}
+
+.login-form .login-row {
+  display: contents;
+}
+
+.login-form .login-row .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.login-form button {
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .login-form {
+    max-width: 100%;
+  }
+}
+
+strong,
+strong b {
+  color: var(--text);
+}
+
+em,
+.muted,
+span.muted {
+  color: var(--muted);
+}

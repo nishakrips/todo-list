@@ -1,5 +1,6 @@
 import FilterInput from "./FilteredInput.jsx"
 import StatusFilter from "./StatusFilter.jsx"
+import styles from "./Toolbar.module.css"
 
 function Toolbar({
   sortBy,
@@ -10,12 +11,15 @@ function Toolbar({
   onFilterChange,
 }) {
   return (
-    <section className="toolbar" aria-label="Todo toolbar">
-      <div className="toolbar-top-row">
-        <div className="toolbar-group toolbar-group--sort-by">
-          <label htmlFor="sort-by">Sort by:</label>
+    <section className={styles.toolbar} aria-label="Todo toolbar">
+      <div className={styles.toolbarTopRow}>
+        <div className={styles.toolbarGroup}>
+          <label className={styles.toolbarLabel} htmlFor="sort-by">
+            Sort by:
+          </label>
           <select
             id="sort-by"
+            className={styles.toolbarSelect}
             value={sortBy}
             onChange={(e) => onSortByChange(e.target.value)}
           >
@@ -23,10 +27,13 @@ function Toolbar({
             <option value="title">Title</option>
           </select>
         </div>
-        <div className="toolbar-group toolbar-group--sort-direction">
-          <label htmlFor="sort-direction">Order:</label>
+        <div className={styles.toolbarGroup}>
+          <label className={styles.toolbarLabel} htmlFor="sort-direction">
+            Order:
+          </label>
           <select
             id="sort-direction"
+            className={styles.toolbarSelect}
             value={sortDirection}
             onChange={(e) => onSortDirectionChange(e.target.value)}
           >
@@ -34,12 +41,12 @@ function Toolbar({
             <option value="desc">Descending</option>
           </select>
         </div>
-        <div className="toolbar-group toolbar-group--status">
+        <div className={styles.toolbarGroup}>
           <StatusFilter />
         </div>
       </div>
-      <div className="toolbar-bottom-row">
-        <div className="toolbar-group toolbar-group--search">
+      <div className={styles.toolbarBottomRow}>
+        <div className={styles.toolbarGroup}>
           <FilterInput
             filterTerm={filterTerm}
             onFilterChange={onFilterChange}

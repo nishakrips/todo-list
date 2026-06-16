@@ -38,7 +38,7 @@ function LoginPage() {
 
   return (
     <>
-      <p>{authError}</p>
+      <p style={{ color: "red" }}>{authError}</p>
       <form onSubmit={handleSubmit} className="login-form">
         <div className="login-row">
           <div className="field">

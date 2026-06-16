@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router"
 import { useAuth } from "../contexts/AuthContext.jsx"
+import styles from "./Navigation.module.css"
 
 function Navigation() {
   const { isAuthenticated, logout } = useAuth()
@@ -12,8 +13,8 @@ function Navigation() {
   }
 
   return (
-    <nav className="nav">
-      <ul>
+    <nav className={styles.nav}>
+      <ul className={styles.navList}>
         <li>
           <NavLink to="/" style={navLinkStyle}>
             Home

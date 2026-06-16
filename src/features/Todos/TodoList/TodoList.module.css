@@ -1,0 +1,5 @@
+.todoList {
+  list-style: disc inside;
+  margin: 25px;
+  padding: 10px;
+}
