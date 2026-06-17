@@ -13,11 +13,6 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
     finishEdit,
   } = useEditableTitle(todo.title)
 
-  // function handleCancel() {
-  //   setIsEditing(false)
-  //   setWorkingTitle(todo.title)
-  // }
-
   function handleUpdate(evt) {
     if (!isEditing) return
     evt.preventDefault()

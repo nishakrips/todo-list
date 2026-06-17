@@ -7,7 +7,6 @@ function Header() {
 
   return (
     <header className={styles.header}>
-      {/* <h1>My Todos</h1> */}
       <Navigation />
     </header>
   )
