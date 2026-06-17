@@ -238,6 +238,7 @@ function TodosPage() {
         dataVersion={dataVersion}
         statusFilter={statusFilter}
       />
+      {state.isTodoListLoading && <p>Loading todos...</p>}
     </div>
   )
 }

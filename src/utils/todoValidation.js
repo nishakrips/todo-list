@@ -1,3 +1,3 @@
 export function isValidTodoTitle(todoTitle) {
-  return todoTitle.trim() !== ""
+  return todoTitle.trim() !== "" && todoTitle.length <= 100
 }

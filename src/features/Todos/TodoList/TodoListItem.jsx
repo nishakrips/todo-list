@@ -1,3 +1,4 @@
+import DOMPurify from "dompurify"
 import { useEditableTitle } from "../../../hooks/useEditableTitle.js"
 import { isValidTodoTitle } from "../../../utils/todoValidation.js"
 import TextInputWithLabel from "../../../shared/TextInputWithLabel.jsx"
@@ -27,7 +28,9 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
           <>
             <TextInputWithLabel
               value={workingTitle}
-              onChange={(evt) => updateTitle(evt.target.value)}
+              onChange={(evt) =>
+                updateTitle(DOMPurify.sanitize(evt.target.value))
+              }
               elementId={todo.id}
               labelText="Todo"
             />

@@ -1,3 +1,4 @@
+import DOMPurify from "dompurify"
 import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router"
 import { useAuth } from "../contexts/AuthContext"
@@ -47,7 +48,9 @@ function LoginPage() {
               value={email}
               labelText="Email"
               required
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) =>
+                setEmail(DOMPurify.sanitize(event.target.value))
+              }
             />
           </div>
           <div className="field">
@@ -57,7 +60,9 @@ function LoginPage() {
               labelText="Password"
               type="password"
               required
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={(event) =>
+                setPassword(DOMPurify.sanitize(event.target.value))
+              }
             />
           </div>
         </div>
